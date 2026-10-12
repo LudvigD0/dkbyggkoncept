@@ -1,0 +1,188 @@
+import type { RequiredDataFromCollectionSlug } from 'payload'
+
+const select = (
+  name: string,
+  label: string,
+  step: '1' | '2',
+  options: Array<[string, string]>,
+  required = false,
+) => ({
+  blockType: 'select' as const,
+  name,
+  label,
+  step,
+  required,
+  width: 100,
+  options: options.map(([value, label]) => ({ value, label })),
+})
+export const quoteFormData: RequiredDataFromCollectionSlug<'forms'> = {
+  seedKey: 'dk-quote-form',
+  formKind: 'quote',
+  title: 'Offertförfrågan',
+  submitButtonLabel: 'Skicka offertförfrågan',
+  confirmationType: 'message',
+  confirmationMessage: {
+    root: {
+      type: 'root',
+      format: '',
+      indent: 0,
+      version: 1,
+      direction: 'ltr',
+      children: [
+        {
+          type: 'paragraph',
+          format: '',
+          indent: 0,
+          version: 1,
+          direction: 'ltr',
+          children: [
+            {
+              type: 'text',
+              text: 'Tack för din förfrågan! Vi återkommer med nästa steg mot en kostnadsfri offert.',
+              format: 0,
+              detail: 0,
+              mode: 'normal',
+              style: '',
+              version: 1,
+            },
+          ],
+        },
+      ],
+    },
+  },
+  emails: [],
+  fields: [
+    select(
+      'service',
+      'Vad vill du ha hjälp med?',
+      '1',
+      [
+        ['badrum', 'Badrumsrenovering'],
+        ['kok', 'Köksrenovering'],
+        ['totalrenovering', 'Totalrenovering'],
+        ['tillbyggnad', 'Tillbyggnad'],
+        ['tak', 'Takrenovering / takbyte'],
+        ['dranering', 'Dränering'],
+        ['fonster-isolering', 'Fönsterbyte / tilläggsisolering'],
+        ['nybyggnation', 'Nybyggnation'],
+        ['annat', 'Annat'],
+      ],
+      true,
+    ),
+    select(
+      'property',
+      'Vilken typ av fastighet gäller det?',
+      '1',
+      [
+        ['villa', 'Villa / radhus'],
+        ['lagenhet', 'Bostadsrätt / lägenhet'],
+        ['fritidshus', 'Fritidshus'],
+        ['kommersiell', 'Företagslokal / kommersiell fastighet'],
+        ['annat', 'Annat'],
+      ],
+      true,
+    ),
+    {
+      blockType: 'text',
+      name: 'location',
+      label: 'Var ligger projektet?',
+      placeholder: 'Postnummer / ort',
+      required: true,
+      width: 100,
+      step: '1',
+      inputType: 'text',
+      autoComplete: 'postal-code',
+    },
+    select('budget', 'Vad är din ungefärliga budget?', '2', [
+      ['under-100', 'Under 100 000 kr'],
+      ['100-250', '100 000–250 000 kr'],
+      ['250-500', '250 000–500 000 kr'],
+      ['500-1000', '500 000–1 000 000 kr'],
+      ['over-1000', 'Över 1 000 000 kr'],
+      ['radgivning', 'Vet inte / vill ha rådgivning'],
+    ]),
+    select('timeline', 'När vill du komma igång?', '2', [
+      ['snarast', 'Så snart som möjligt'],
+      ['1-3', 'Inom 1–3 månader'],
+      ['3-6', 'Inom 3–6 månader'],
+      ['over-6', 'Om mer än 6 månader'],
+      ['flexibelt', 'Flexibelt / vet inte ännu'],
+    ]),
+    {
+      blockType: 'textarea',
+      name: 'description',
+      label: 'Beskriv ditt projekt',
+      placeholder: 'Berätta gärna lite om vad du vill göra...',
+      required: false,
+      width: 100,
+      step: '2',
+    },
+    {
+      blockType: 'quoteImages',
+      name: 'images',
+      label: 'Bifoga bilder',
+      helpText:
+        'Bifoga gärna bilder på utrymmet, fastigheten eller ritningar. Upp till 5 bilder i JPG, PNG eller WebP. Bilderna anpassas automatiskt innan de skickas.',
+      step: '2',
+    },
+    {
+      blockType: 'text',
+      name: 'fullName',
+      label: 'För- och efternamn',
+      required: true,
+      width: 100,
+      step: '3',
+      inputType: 'text',
+      autoComplete: 'name',
+    },
+    {
+      blockType: 'email',
+      name: 'email',
+      label: 'E-postadress',
+      required: true,
+      width: 100,
+      step: '3',
+      inputType: 'email',
+      autoComplete: 'email',
+    },
+    {
+      blockType: 'text',
+      name: 'phone',
+      label: 'Telefonnummer',
+      required: true,
+      width: 100,
+      step: '3',
+      inputType: 'tel',
+      autoComplete: 'tel',
+    },
+  ],
+  quoteSettings: {
+    steps: [
+      {
+        title: 'Ditt projekt',
+        description: 'Berätta vad du vill ha hjälp med och var projektet ligger.',
+      },
+      {
+        title: 'Omfattning',
+        description:
+          'Fyll gärna i det du vet. Budget, tidsplan, beskrivning och bilder är frivilliga.',
+      },
+      {
+        title: 'Kontaktuppgifter',
+        description:
+          'Fyll i dina uppgifter så återkommer vi med nästa steg mot en kostnadsfri offert.',
+      },
+    ],
+    privacyText:
+      'Vi använder dina kontaktuppgifter, projektbeskrivning och eventuella bilder för att hantera din offertförfrågan och kontakta dig om projektet. Uppgifterna sparas hos oss och skickas via vår e-posttjänst Resend. Vi använder dem inte för marknadsföring.',
+    requiredText: 'Fält markerade med * är obligatoriska.',
+    nextLabel: 'Nästa steg',
+    backLabel: 'Tillbaka',
+    optionalLabel: 'valfritt',
+    selectPlaceholder: 'Välj ett alternativ',
+    sendingLabel: 'Skickar…',
+    successTitle: 'Tack för din förfrågan!',
+    successText:
+      'Vi har fått din offertförfrågan och återkommer med nästa steg mot en kostnadsfri offert.',
+  },
+}
