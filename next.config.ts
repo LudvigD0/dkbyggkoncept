@@ -17,6 +17,7 @@ const nextConfig: NextConfig = {
     loadPaths: ['./node_modules/@payloadcms/ui/dist/scss/'],
   },
   images: {
+    minimumCacheTTL: 60 * 60 * 24 * 365, // 1 year; CMS image URLs are versioned with updatedAt.
     localPatterns: [
       {
         pathname: '/**',
