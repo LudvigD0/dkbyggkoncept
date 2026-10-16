@@ -11,6 +11,13 @@ import { getServerSideURL } from './src/utilities/getURL'
 const NEXT_PUBLIC_SERVER_URL = getServerSideURL()
 
 const nextConfig: NextConfig = {
+  env: {
+    // Vercel applies the image TTL to absolute CMS URLs. Inline the same origin for SSR and clients.
+    NEXT_PUBLIC_MEDIA_ORIGIN:
+      process.env.NODE_ENV === 'production' && process.env.VERCEL_ENV === 'production'
+        ? NEXT_PUBLIC_SERVER_URL
+        : '',
+  },
   // Temporarily required on Windows until Next.js fixes Turbopack Sass resolution.
   // See: https://github.com/vercel/next.js/issues/86431
   sassOptions: {
