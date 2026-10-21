@@ -50,15 +50,17 @@ export default async function Page({ params: paramsPromise, searchParams }: Args
   // Decode to support slugs with special characters
   const decodedSlug = decodeURIComponent(slug)
   const url = '/' + decodedSlug
-  const page = await queryPageBySlug({
-    slug: decodedSlug,
-  })
+  const page = await queryPageBySlug(decodedSlug)
 
   if (!page) {
     return <PayloadRedirects url={url} />
   }
 
   const { hero, layout } = page
+  // Only the quote form uses URL parameters. Reading them on every page disables prerendering.
+  const selectedService = layout?.some((block) => block.blockType === 'quotePanel')
+    ? (await searchParams)?.tjanst
+    : undefined
 
   return (
     <article>
@@ -75,7 +77,7 @@ export default async function Page({ params: paramsPromise, searchParams }: Args
       <div className={decodedSlug === 'home' ? 'pt-12 md:pt-20' : undefined}>
         <RenderBlocks
           blocks={layout ?? []}
-          selectedService={(await searchParams)?.tjanst}
+          selectedService={selectedService}
           heroType={hero?.type}
         />
       </div>
@@ -87,14 +89,13 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   const { slug = 'home' } = await paramsPromise
   // Decode to support slugs with special characters
   const decodedSlug = decodeURIComponent(slug)
-  const page = await queryPageBySlug({
-    slug: decodedSlug,
-  })
+  const page = await queryPageBySlug(decodedSlug)
 
   return generateMeta({ doc: page })
 }
 
-const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {
+// A primitive argument lets the page and generateMetadata share the same query per render.
+const queryPageBySlug = cache(async (slug: string) => {
   if (isRetiredPageSlug(slug)) notFound()
 
   const { isEnabled: draft } = await draftMode()
